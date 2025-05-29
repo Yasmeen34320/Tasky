@@ -55,7 +55,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                 ),
                 SizedBox(width: 4),
                 Text(
-                  'Completed Tasks',
+                  'To Do Tasks',
                   style: Theme.of(context).textTheme.displayMedium,
                 ),
               ],
