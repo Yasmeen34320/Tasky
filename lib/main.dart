@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tasky/main_screen.dart';
 import 'package:tasky/tasks_screen.dart';
+import 'package:tasky/user_details.dart';
 import 'package:tasky/welcome_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 

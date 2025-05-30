@@ -15,6 +15,7 @@ class TasksScreen extends StatefulWidget {
 class _TasksScreenState extends State<TasksScreen> {
   // SharedPreferences prefs=await SharedPreferences.getInstance();
   String? username;
+  int doneTasks = 0;
   List<dynamic> value = [], highpriority = [];
   @override
   void initState() {
@@ -33,6 +34,7 @@ class _TasksScreenState extends State<TasksScreen> {
       highpriority = value
           .where((task) => task['isHighPriority'] == 1)
           .toList();
+      doneTasks = value.where((task) => task['isDone'] == 1).length;
       print("Loaded tasks: $highpriority");
     }
     setState(() {}); // <- trigger rebuild
@@ -80,7 +82,7 @@ class _TasksScreenState extends State<TasksScreen> {
               Row(
                 children: [
                   CircleAvatar(
-                    radius: 42,
+                    radius: 32,
                     backgroundColor: Color(0xFF181818),
                     backgroundImage: AssetImage('assets/images/avatar.png'),
                   ),
@@ -108,6 +110,16 @@ class _TasksScreenState extends State<TasksScreen> {
                             ),
                       ),
                     ],
+                  ),
+                  Spacer(),
+                  CircleAvatar(
+                    radius: 23,
+                    backgroundColor: Color(0xFF282828),
+                    child: SvgPicture.asset(
+                      'assets/images/sun.svg',
+                      width: 23,
+                      height: 23,
+                    ),
                   ),
                 ],
               ),
@@ -154,7 +166,7 @@ class _TasksScreenState extends State<TasksScreen> {
                           ),
                           SizedBox(height: 3),
                           Text(
-                            '3 Out of 6 Done ',
+                            '$doneTasks Out of ${value.length} Done ',
                             style: Theme.of(context).textTheme.displaySmall
                                 ?.copyWith(
                                   color: Color(0xFFC6C6C6),
@@ -163,82 +175,157 @@ class _TasksScreenState extends State<TasksScreen> {
                           ),
                         ],
                       ),
+                      Spacer(),
+                      SizedBox(
+                        width: 60,
+                        height: 60,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // Background (gray circle)
+                            Transform.scale(
+                              scale: 1.7,
+                              child: CircularProgressIndicator(
+                                value: 1.0,
+                                valueColor: AlwaysStoppedAnimation(
+                                  Color(0xFFA0A0A0),
+                                ),
+                                strokeWidth: 4,
+                              ),
+                            ),
+                            // Foreground (green progress)
+                            Transform.scale(
+                              scale: 1.7,
+                              child: CircularProgressIndicator(
+                                value: 0.5,
+                                valueColor: AlwaysStoppedAnimation(
+                                  Color(0xFF15B86C),
+                                ),
+                                backgroundColor: Colors.transparent,
+                                strokeWidth: 4,
+                              ),
+                            ),
+                            // Centered text
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                '${(0.5 * 100).toInt()}%',
+                                style: Theme.of(context).textTheme.displaySmall
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
               SizedBox(height: 16),
 
-              Container(
-                height: 230,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  color: Color(0xFF282828),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        'High Priority Tasks',
-                        style: Theme.of(context).textTheme.displaySmall
-                            ?.copyWith(color: Color(0xFF15B86C), fontSize: 17),
+              Stack(
+                children: [
+                  Container(
+                    height: 230,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      color: Color(0xFF282828),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            'High Priority Tasks',
+                            style: Theme.of(context).textTheme.displaySmall
+                                ?.copyWith(
+                                  color: Color(0xFF15B86C),
+                                  fontSize: 17,
+                                ),
+                          ),
+                          SizedBox(
+                            height: 170,
+                            child: ListView.builder(
+                              itemCount: highpriority.length,
+                              padding: EdgeInsets.all(8),
+
+                              itemBuilder: (context, index) {
+                                final task = highpriority[index];
+
+                                return Row(
+                                  children: [
+                                    Checkbox(
+                                      value: task['isDone'] == 1 ? true : false,
+                                      onChanged: (value1) async {
+                                        setState(() {
+                                          print(value1);
+                                          task['isDone'] = value1! ? 1 : 0;
+                                        });
+                                        SharedPreferences prefs =
+                                            await SharedPreferences.getInstance();
+                                        await prefs.setString(
+                                          'tasks',
+                                          jsonEncode(value),
+                                        ); // save whole task list
+                                        getData(); // reload and rebuild
+                                      }, // Optional: handle check action
+                                      activeColor: Color(0xFF15B86C),
+                                    ),
+                                    Text(
+                                      task['title'],
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .displaySmall
+                                          ?.copyWith(
+                                            color: task['isDone'] == 1
+                                                ? Color(0xFFA0A0A0)
+                                                : Colors.white,
+                                            decoration: task['isDone'] == 1
+                                                ? TextDecoration.lineThrough
+                                                : TextDecoration.none,
+                                            fontSize: 17,
+                                            decorationColor: Color(0xFFA0A0A0),
+                                          ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                        height: 170,
-                        child: ListView.builder(
-                          itemCount: highpriority.length,
-                          padding: EdgeInsets.all(8),
-
-                          itemBuilder: (context, index) {
-                            final task = highpriority[index];
-
-                            return Row(
-                              children: [
-                                Checkbox(
-                                  value: task['isDone'] == 1 ? true : false,
-                                  onChanged: (value1) async {
-                                    setState(() {
-                                      print(value1);
-                                      task['isDone'] = value1! ? 1 : 0;
-                                    });
-                                    SharedPreferences prefs =
-                                        await SharedPreferences.getInstance();
-                                    await prefs.setString(
-                                      'tasks',
-                                      jsonEncode(value),
-                                    ); // save whole task list
-                                    getData(); // reload and rebuild
-                                  }, // Optional: handle check action
-                                  activeColor: Color(0xFF15B86C),
-                                ),
-                                Text(
-                                  task['title'],
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .displaySmall
-                                      ?.copyWith(
-                                        color: task['isDone'] == 1
-                                            ? Color(0xFFA0A0A0)
-                                            : Colors.white,
-                                        decoration: task['isDone'] == 1
-                                            ? TextDecoration.lineThrough
-                                            : TextDecoration.none,
-                                        fontSize: 17,
-                                        decorationColor: Color(0xFFA0A0A0),
-                                      ),
-                                ),
-                              ],
-                            );
-                          },
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 20,
+                    right: 25,
+                    child: Container(
+                      padding: EdgeInsets.all(
+                        5,
+                      ), // space between border and avatar
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Color(0xFF6E6E6E), // border color
+                          width: 1, // border width
                         ),
                       ),
-                    ],
+                      child: CircleAvatar(
+                        radius: 25,
+
+                        backgroundColor: Color(0xFF282828),
+                        child: SvgPicture.asset(
+                          'assets/images/arrow-1.svg',
+                          width: 18,
+                          height: 18,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
               SizedBox(height: 24),
               Text(
