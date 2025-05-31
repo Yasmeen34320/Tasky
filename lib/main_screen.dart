@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tasky/completed_tasks_screen.dart';
+import 'package:tasky/controllers/task_controller.dart';
 import 'package:tasky/profile_screen.dart';
 import 'package:tasky/tasks_screen.dart';
 import 'package:tasky/to_do_screen.dart';
@@ -31,50 +33,53 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: screens[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/images/home.svg',
-              color: (_selectedIndex == 0)
-                  ? Color(0xFF15B86C)
-                  : Color(0xFFC6C6C6),
+    return ChangeNotifierProvider<TaskController>(
+      create: (context) => TaskController()..init(),
+      child: Scaffold(
+        body: screens[_selectedIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          items: [
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/images/home.svg',
+                color: (_selectedIndex == 0)
+                    ? Color(0xFF15B86C)
+                    : Color(0xFFC6C6C6),
+              ),
+              label: 'Home',
             ),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/images/todo.svg',
-              color: (_selectedIndex == 1)
-                  ? Color(0xFF15B86C)
-                  : Color(0xFFC6C6C6),
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/images/todo.svg',
+                color: (_selectedIndex == 1)
+                    ? Color(0xFF15B86C)
+                    : Color(0xFFC6C6C6),
+              ),
+              label: 'To Do',
             ),
-            label: 'To Do',
-          ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/images/complete.svg',
-              color: (_selectedIndex == 2)
-                  ? Color(0xFF15B86C)
-                  : Color(0xFFC6C6C6),
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/images/complete.svg',
+                color: (_selectedIndex == 2)
+                    ? Color(0xFF15B86C)
+                    : Color(0xFFC6C6C6),
+              ),
+              label: 'Completed',
             ),
-            label: 'Completed',
-          ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/images/profile.svg',
-              color: (_selectedIndex == 3)
-                  ? Color(0xFF15B86C)
-                  : Color(0xFFC6C6C6),
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/images/profile.svg',
+                color: (_selectedIndex == 3)
+                    ? Color(0xFF15B86C)
+                    : Color(0xFFC6C6C6),
+              ),
+              label: 'Profile',
             ),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: _selectedIndex,
+          ],
+          currentIndex: _selectedIndex,
 
-        onTap: _onItemTapped,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }

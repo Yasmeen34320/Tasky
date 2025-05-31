@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tasky/components/custom_text_field.dart';
+import 'package:tasky/constants/storage_key.dart';
 import 'package:tasky/main_screen.dart';
+import 'package:tasky/services/preferences_manager.dart';
 import 'package:tasky/tasks_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class WelcomeScreen extends StatefulWidget {
-  const WelcomeScreen({super.key});
+class WelcomeScreen extends StatelessWidget {
+  WelcomeScreen({super.key});
 
-  @override
-  State<WelcomeScreen> createState() => _WelcomeScreenState();
-}
-
-class _WelcomeScreenState extends State<WelcomeScreen> {
   final _formKey = GlobalKey<FormState>();
+
   final TextEditingController _usernameController = TextEditingController();
 
   @override
@@ -96,12 +94,21 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 // ),
                 SizedBox(height: 24),
                 ElevatedButton(
+                  style: ButtonStyle(
+                    fixedSize: MaterialStateProperty.all(
+                      Size(MediaQuery.of(context).size.width, 40),
+                    ), // width:200, height:50
+                  ),
                   onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
-                      final SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      await prefs.setString(
-                        'username',
+                      // final SharedPreferences prefs =
+                      //     await SharedPreferences.getInstance();
+                      // await prefs.setString(
+                      //   'username',
+                      //   _usernameController.text,
+                      // );
+                      PreferencesManager().setString(
+                        StorageKey.username,
                         _usernameController.text,
                       );
 

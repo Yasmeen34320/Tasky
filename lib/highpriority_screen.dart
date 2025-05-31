@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tasky/components/container_shared.dart';
@@ -10,16 +10,16 @@ import 'package:tasky/controllers/task_controller.dart';
 import 'package:tasky/core/Models/task_model.dart';
 import 'package:tasky/services/preferences_manager.dart';
 
-class ToDoScreen extends StatefulWidget {
-  const ToDoScreen({super.key});
+class HighPriorityTasks extends StatefulWidget {
+  const HighPriorityTasks({super.key});
 
   @override
-  State<ToDoScreen> createState() => _ToDoScreenState();
+  State<HighPriorityTasks> createState() => _HighPriorityTasksState();
 }
 
-class _ToDoScreenState extends State<ToDoScreen> {
+class _HighPriorityTasksState extends State<HighPriorityTasks> {
   List<dynamic> value = [];
-  List<TaskModel> todoTasks = [];
+  List<TaskModel> highPriority = [];
 
   // @override
   // void initState() {
@@ -35,11 +35,11 @@ class _ToDoScreenState extends State<ToDoScreen> {
 
   //   if (task != null) {
   //     value = jsonDecode(task);
-  //     todoTasks = value
+  //     highPriority = value
   //         .map((task) => TaskModel.fromMap(task))
-  //         .where((task) => task.isDone == 0)
+  //         .where((task) => task.isHighPriority)
   //         .toList();
-  //     print("Loaded tasks: $todoTasks");
+  //     print("Loaded tasks: $highPriority");
   //   }
   //   setState(() {}); // <- trigger rebuild
   // }
@@ -55,7 +55,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
   //     tasks.removeWhere((test) => test.id == id);
 
   //     setState(() {
-  //       todoTasks.removeWhere((test) => test.id == id);
+  //       highPriority.removeWhere((test) => test.id == id);
   //     });
   //     final updatedTask = tasks.map((toElement) => toElement.toMap()).toList();
   //     PreferencesManager().setString(StorageKey.tasks, jsonEncode(updatedTask));
@@ -73,113 +73,111 @@ class _ToDoScreenState extends State<ToDoScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: SvgPicture.asset(
-                  'assets/images/arrow.svg',
-                  width: 30,
-                  height: 30,
-                  color: Colors.white,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: SvgPicture.asset(
+                    'assets/images/arrow.svg',
+                    width: 30,
+                    height: 30,
+                    color: Colors.white,
+                  ),
                 ),
               ),
               SizedBox(width: 4),
               Text(
-                'To Do Tasks',
+                'HighPriority Tasks',
                 style: Theme.of(context).textTheme.displayMedium,
               ),
             ],
           ),
           SizedBox(height: 16),
-
           Consumer<TaskController>(
-            builder:
-                (
-                  BuildContext context,
-                  TaskController controller,
-                  Widget? child,
-                ) {
-                  return ListView.separated(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: controller.todoTasks.length,
-                    padding: EdgeInsets.only(bottom: 60),
-                    itemBuilder: (BuildContext context, int index) {
-                      return ContainerShared(
-                        task: controller.todoTasks[index],
-                        showDesc: false,
-                        onDelete: (int? id) {
-                          // deleteTask(index);
-                          controller.deleteTask(controller.todoTasks[index].id);
-                        },
-                        onChanged: (value, id) async {
-                          print('totASKS ${controller.todoTasks}');
-                          int index1 = controller.tasks.indexOf(
-                            controller.tasks.firstWhere(
-                              (test) =>
-                                  test.id == controller.todoTasks[index].id,
-                            ),
-                          );
-                          print(index1);
-                          await controller.doneTask(value, index1);
-
-                          // int index = todoTasks.indexOf(
-                          //   todoTasks.firstWhere((test) => test.id == id),
-                          // );
-
-                          // print('before change ${todoTasks[index!].isDone}');
-                          // setState(() {
-                          //   todoTasks[index!].isDone = value! ? 1 : 0;
-                          // });
-                          // final allData = PreferencesManager().getString(
-                          //   StorageKey.tasks,
-                          // );
-                          // print('after change ${todoTasks[index].isDone}');
-                          // print('all Data $allData');
-                          // if (allData != null) {
-                          //   List<TaskModel> allDataList =
-                          //       (jsonDecode(allData) as List)
-                          //           .map(
-                          //             (element) => TaskModel.fromMap(element),
-                          //           )
-                          //           .toList();
-                          //   final int newIndex = allDataList.indexWhere(
-                          //     (e) => e.id == todoTasks[index!].id,
-                          //   );
-                          //   allDataList[newIndex] = todoTasks[index];
-
-                          //   await PreferencesManager().setString(
-                          //     StorageKey.tasks,
-                          //     jsonEncode(
-                          //       allDataList.map((e) => e.toMap()).toList(),
-                          //     ),
-                          //   );
-                          //   getData();
-                          // }
-                        },
-                        onEdit: () {
-                          controller.getData();
-                        },
-                        // onChanged: (bool? value) {
-                        //   onTap(value, index);
-                        // },
-                        // onDelete: (int id) {
-                        //   onDelete(id);
-                        // },
-                        // onEdit: () => onEdit(),
+            builder: (BuildContext context, TaskController controller, Widget? child) {
+              return ListView.separated(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: controller.highPriority1.length,
+                padding: EdgeInsets.only(bottom: 60),
+                itemBuilder: (BuildContext context, int index) {
+                  return ContainerShared(
+                    task: controller.highPriority1[index],
+                    showDesc: false,
+                    onDelete: (int? id) {
+                      controller.deleteTask(controller.highPriority1[index].id);
+                    },
+                    onChanged: (value, id) async {
+                      int index1 = controller.tasks.indexOf(
+                        controller.tasks.firstWhere(
+                          (test) =>
+                              test.id == controller.highPriority1[index].id,
+                        ),
                       );
+                      controller.doneTask(value, index1);
+
+                      //   int index = highPriority.indexOf(
+                      //     highPriority.firstWhere((test) => test.id == id),
+                      //   );
+
+                      //   print(
+                      //     'before change ${highPriority[index!].isDone}',
+                      //   );
+                      //   setState(() {
+                      //     highPriority[index!].isDone = value! ? 1 : 0;
+                      //   });
+                      //   final allData = PreferencesManager().getString(
+                      //     StorageKey.tasks,
+                      //   );
+                      //   print('after change ${highPriority[index].isDone}');
+                      //   print('all Data $allData');
+                      //   if (allData != null) {
+                      //     List<TaskModel> allDataList =
+                      //         (jsonDecode(allData) as List)
+                      //             .map(
+                      //               (element) => TaskModel.fromMap(element),
+                      //             )
+                      //             .toList();
+                      //     final int newIndex = allDataList.indexWhere(
+                      //       (e) => e.id == highPriority[index!].id,
+                      //     );
+                      //     allDataList[newIndex] = highPriority[index];
+
+                      //     await PreferencesManager().setString(
+                      //       StorageKey.tasks,
+                      //       jsonEncode(
+                      //         allDataList.map((e) => e.toMap()).toList(),
+                      //       ),
+                      //     );
+                      //     getData();
+                      //   }
                     },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return SizedBox(height: 8);
+                    onEdit: () {
+                      controller.getData();
                     },
+                    // onChanged: (bool? value) {
+                    //   onTap(value, index);
+                    // },
+                    // onDelete: (int id) {
+                    //   onDelete(id);
+                    // },
+                    // onEdit: () => onEdit(),
                   );
                 },
+                separatorBuilder: (BuildContext context, int index) {
+                  return SizedBox(height: 8);
+                },
+              );
+            },
           ),
 
           // Expanded(
           //   child: ListView.builder(
-          //     itemCount: todoTasks.length,
+          //     itemCount: completedTasks.length,
           //     padding: EdgeInsets.symmetric(vertical: 8),
 
           //     itemBuilder: (context, index) {
-          //       final task = todoTasks[index];
+          //       final task = completedTasks[index];
           //       return ContainerShared(task: task, showDesc: false);
           //       // return Padding(
           //       //   padding: const EdgeInsets.all(8.0),
