@@ -129,6 +129,7 @@ class WelcomeScreen extends StatelessWidget {
                       's Get Started',
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(
                         fontWeight: FontWeight.w500,
+                        color: Color(0xFFFFFFFF),
                       ),
                     ),
                   ),

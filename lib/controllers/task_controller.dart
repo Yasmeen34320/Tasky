@@ -8,9 +8,7 @@ import 'package:tasky/services/preferences_manager.dart';
 
 class TaskController with ChangeNotifier {
   List<TaskModel> tasksList = [];
-  String? username = "Default";
-  String? userImagePath;
-  String? motivationQuote = "One task at a time. One step closer.";
+
   List<TaskModel> tasks = [];
   bool isLoading = false;
   int totalTask = 0;
@@ -22,45 +20,29 @@ class TaskController with ChangeNotifier {
   // List<TaskModel> list = [];
 
   List<TaskModel> todoTasks = [];
-  List<TaskModel> highPriority1 = [];
+  // List<TaskModel> highPriority1 = [];
   List<TaskModel> completedTasks = [];
 
   init() {
-    loadUserData();
+    // loadUserData();
     getData();
   }
 
-  void loadUserData() async {
-    username = PreferencesManager().getString(StorageKey.username);
-    userImagePath = PreferencesManager().getString(StorageKey.userImage);
-    motivationQuote = PreferencesManager().getString(
-      StorageKey.motivationQuote,
-    );
-    notifyListeners();
-  }
-
-  changeDetails(String user, String motivation) async {
-    await PreferencesManager().setString(StorageKey.username, user);
-    await PreferencesManager().setString(
-      StorageKey.motivationQuote,
-      motivation,
-    );
-  }
-
   void getData() async {
-    username = PreferencesManager().getString(StorageKey.username);
+    // username = PreferencesManager().getString(StorageKey.username);
     String? task = PreferencesManager().getString(StorageKey.tasks);
     if (task != null) {
       value = jsonDecode(task);
       tasks = value.map((task) => TaskModel.fromMap(task)).toList();
       // tasks = list;
-      highPriority1 = tasks.where((test) => test.isHighPriority).toList();
-      completedTasks = tasks.where((test) => test.isDone == 1).toList();
-      todoTasks = tasks.where((test) => test.isDone == 0).toList();
-      highpriority = value
-          .where((task) => task['isHighPriority'] == 1)
-          .toList();
-      doneTasks = value.where((task) => task['isDone'] == 1).length;
+      // highPriority1 = tasks.where((test) => test.isHighPriority).toList();
+      // completedTasks = tasks.where((test) => test.isDone == 1).toList();
+      // todoTasks = tasks.where((test) => test.isDone == 0).toList();
+      // highpriority = value
+      //     .where((task) => task['isHighPriority'] == 1)
+      //     .toList();
+      loadTasks();
+      doneTasks = tasks.where((task) => task.isDone == 1).length;
       print("Loaded tasks: $highpriority");
     }
     // <- trigger rebuild
@@ -78,45 +60,46 @@ class TaskController with ChangeNotifier {
 
   doneTask(bool? value, int? index) async {
     tasks[index!].isDone = value! ? 1 : 0;
-    if (highpriority.contains(
-      highpriority.firstWhere((test) => test['id'] == tasks[index].id),
-    )) {
-      highpriority[highpriority.indexOf(
-        highpriority.firstWhere((test) => test['id'] == tasks[index].id),
-      )!]['isDone'] = value!
-          ? 1
-          : 0;
-    }
-    if (highPriority1.contains(
-      highPriority1.firstWhere((test) => test.id == tasks[index].id),
-    )) {
-      highPriority1[highPriority1.indexOf(
-            highPriority1.firstWhere((test) => test.id == tasks[index].id),
-          )!]
-          .isDone = value!
-          ? 1
-          : 0;
-    }
-    if (completedTasks.contains(
-      completedTasks.firstWhere((test) => test.id == tasks[index].id),
-    )) {
-      completedTasks[completedTasks.indexOf(
-            completedTasks.firstWhere((test) => test.id == tasks[index].id),
-          )!]
-          .isDone = value!
-          ? 1
-          : 0;
-    }
-    if (todoTasks.contains(
-      todoTasks.firstWhere((test) => test.id == tasks[index].id),
-    )) {
-      todoTasks[todoTasks.indexOf(
-            todoTasks.firstWhere((test) => test.id == tasks[index].id),
-          )!]
-          .isDone = value!
-          ? 1
-          : 0;
-    }
+    loadTasks();
+    // if (highpriority.contains(
+    //   highpriority.firstWhere((test) => test['id'] == tasks[index].id),
+    // )) {
+    //   highpriority[highpriority.indexOf(
+    //     highpriority.firstWhere((test) => test['id'] == tasks[index].id),
+    //   )!]['isDone'] = value!
+    //       ? 1
+    //       : 0;
+    // }
+    // if (highPriority1.contains(
+    //   highPriority1.firstWhere((test) => test.id == tasks[index].id),
+    // )) {
+    //   highPriority1[highPriority1.indexOf(
+    //         highPriority1.firstWhere((test) => test.id == tasks[index].id),
+    //       )!]
+    //       .isDone = value!
+    //       ? 1
+    //       : 0;
+    // }
+    // if (completedTasks.contains(
+    //   completedTasks.firstWhere((test) => test.id == tasks[index].id),
+    // )) {
+    //   completedTasks[completedTasks.indexOf(
+    //         completedTasks.firstWhere((test) => test.id == tasks[index].id),
+    //       )!]
+    //       .isDone = value!
+    //       ? 1
+    //       : 0;
+    // }
+    // if (todoTasks.contains(
+    //   todoTasks.firstWhere((test) => test.id == tasks[index].id),
+    // )) {
+    //   todoTasks[todoTasks.indexOf(
+    //         todoTasks.firstWhere((test) => test.id == tasks[index].id),
+    //       )!]
+    //       .isDone = value!
+    //       ? 1
+    //       : 0;
+    // }
     // highPriority1 = tasks.where((test) => test.isHighPriority).toList();
     // completedTasks = tasks.where((test) => test.isDone == 1).toList();
     // todoTasks = tasks.where((test) => test.isDone == 0).toList();
@@ -144,29 +127,39 @@ class TaskController with ChangeNotifier {
     // PreferencesManager().setString(StorageKey.tasks, jsonEncode(updatedTask));
     // List<TaskModel> tasks = [];
     // print('hereeeeeeeeeeeee');
-    // print('id $id');
+    print('id $id');
     if (id == null) return;
     // final prefTasks = await PreferencesManager().getString(StorageKey.tasks);
-    // // print("pref $prefTasks");
+    //  print("pref $tasks");
 
     // if (prefTasks != null) {
     //   final List<dynamic> decoded = jsonDecode(prefTasks);
 
     // tasks = decoded.map((task) => TaskModel.fromMap(task)).toList();
     tasks.removeWhere((test) => test.id == id);
-    highpriority.removeWhere((test) => test['id'] == id);
-    highPriority1.removeWhere((test) => test.isHighPriority);
-    completedTasks.removeWhere((test) => test.isDone == 1);
-    todoTasks.removeWhere((test) => test.isDone == 0);
-    calculatePercent();
+    // highpriority.removeWhere((test) => test['id'] == id);
+    // highPriority1.removeWhere((test) => test.isHighPriority);
+    // completedTasks.removeWhere((test) => test.isDone == 1);
+    // todoTasks.removeWhere((test) => test.isDone == 0);
+    print('tasks from delete $tasks');
+    loadTasks();
 
+    calculatePercent();
     final updatedTask = tasks.map((toElement) => toElement.toMap()).toList();
     await PreferencesManager().setString(
       StorageKey.tasks,
       jsonEncode(updatedTask),
     );
+    //  getData();
 
+    print(updatedTask);
     notifyListeners();
+  }
+
+  loadTasks() async {
+    completedTasks = tasks.where((test) => test.isDone == 1).toList();
+    todoTasks = tasks.where((test) => test.isDone == 0).toList();
+    highpriority = tasks.where((task) => task.isHighPriority).toList();
   }
 
   toggleAddHighPriority(bool value) {
@@ -181,10 +174,11 @@ class TaskController with ChangeNotifier {
     final updatedTask = tasks.map((element) => element.toMap()).toList();
 
     print(updatedTask);
-    highpriority = tasks.where((task) => task.isHighPriority).toList();
-    highPriority1 = tasks.where((test) => test.isHighPriority).toList();
-    completedTasks = tasks.where((test) => test.isDone == 1).toList();
-    todoTasks = tasks.where((test) => test.isDone == 0).toList();
+    // highpriority = tasks.where((task) => task.isHighPriority).toList();
+    // // highPriority1 = tasks.where((test) => test.isHighPriority).toList();
+    // completedTasks = tasks.where((test) => test.isDone == 1).toList();
+    // todoTasks = tasks.where((test) => test.isDone == 0).toList();
+    loadTasks();
     await PreferencesManager().setString(
       StorageKey.tasks,
       jsonEncode(updatedTask),
@@ -224,9 +218,11 @@ class TaskController with ChangeNotifier {
     print('$index');
     final taskForPref = jsonEncode(tasks.map((t) => t.toMap()).toList());
     print('taskks after update $taskForPref');
-    highPriority1 = tasks.where((test) => test.isHighPriority).toList();
-    completedTasks = tasks.where((test) => test.isDone == 1).toList();
-    todoTasks = tasks.where((test) => test.isDone == 0).toList();
+    // highPriority1 = tasks.where((test) => test.isHighPriority).toList();
+    // completedTasks = tasks.where((test) => test.isDone == 1).toList();
+    // todoTasks = tasks.where((test) => test.isDone == 0).toList();
+
+    loadTasks();
     await PreferencesManager().setString(StorageKey.tasks, taskForPref);
 
     notifyListeners();
@@ -258,9 +254,10 @@ class TaskController with ChangeNotifier {
 
     /// need to convert it to string to use sharedpreference --> jsonEncode
     String value = jsonEncode(taskListJson);
-    highPriority1 = tasks.where((test) => test.isHighPriority).toList();
-    completedTasks = tasks.where((test) => test.isDone == 1).toList();
-    todoTasks = tasks.where((test) => test.isDone == 0).toList();
+    // highPriority1 = tasks.where((test) => test.isHighPriority).toList();
+    // completedTasks = tasks.where((test) => test.isDone == 1).toList();
+    // todoTasks = tasks.where((test) => test.isDone == 0).toList();
+    loadTasks();
     await PreferencesManager().setString(StorageKey.tasks, value);
 
     notifyListeners();

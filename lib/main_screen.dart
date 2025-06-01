@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tasky/completed_tasks_screen.dart';
+import 'package:tasky/controllers/profile_controller.dart';
 import 'package:tasky/controllers/task_controller.dart';
 import 'package:tasky/profile_screen.dart';
 import 'package:tasky/tasks_screen.dart';
@@ -33,8 +34,15 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<TaskController>(
-      create: (context) => TaskController()..init(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<TaskController>(
+          create: (context) => TaskController()..init(),
+        ),
+        ChangeNotifierProvider<ProfileController>(
+          create: (context) => ProfileController()..init(),
+        ),
+      ],
       child: Scaffold(
         body: screens[_selectedIndex],
         bottomNavigationBar: BottomNavigationBar(

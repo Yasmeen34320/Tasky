@@ -9,6 +9,7 @@ import 'package:tasky/constants/storage_key.dart';
 import 'package:tasky/controllers/task_controller.dart';
 import 'package:tasky/core/Models/task_model.dart';
 import 'package:tasky/services/preferences_manager.dart';
+import 'package:tasky/theme/theme_controller.dart';
 
 class CompletedTasksScreen extends StatefulWidget {
   const CompletedTasksScreen({super.key});
@@ -77,7 +78,9 @@ class _CompletedTasksScreenState extends State<CompletedTasksScreen> {
                   'assets/images/arrow.svg',
                   width: 30,
                   height: 30,
-                  color: Colors.white,
+                  color: ThemeController.isDark()
+                      ? Colors.white
+                      : Color(0xFF3A4640),
                 ),
               ),
               SizedBox(width: 4),

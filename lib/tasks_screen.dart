@@ -8,19 +8,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tasky/add_new_task_screen.dart';
 import 'package:tasky/components/container_shared.dart';
 import 'package:tasky/constants/storage_key.dart';
+import 'package:tasky/controllers/profile_controller.dart';
 import 'package:tasky/controllers/task_controller.dart';
 import 'package:tasky/core/Models/task_model.dart';
 import 'package:tasky/highpriority_screen.dart';
 import 'package:tasky/services/preferences_manager.dart';
-
-// class TasksScreen extends StatefulWidget {
-//   TasksScreen({super.key});
-//   // String username;
-//   @override
-//   // Removed: State<TasksScreen> createState() => _TasksScreenState();
-//   // No need for createState in StatelessWidget
-//   State<TasksScreen> createState() => _TasksScreenState();
-// }
+import 'package:tasky/theme/theme_controller.dart';
 
 class TasksScreen extends StatelessWidget {
   // SharedPreferences prefs=await SharedPreferences.getInstance();
@@ -32,58 +25,10 @@ class TasksScreen extends StatelessWidget {
   List<TaskModel> list = [];
   bool isLoading = true;
 
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState(); // ✅ Add this
-
-  //   getData();
-  // }
-
-  // void getData() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   username = prefs.getString('username');
-  //   String? task = prefs.getString('tasks');
-  //   if (task != null) {
-  //     value = jsonDecode(task);
-  //     list = value.map((task) => TaskModel.fromMap(task)).toList();
-  //     highpriority = value
-  //         .where((task) => task['isHighPriority'] == 1)
-  //         .toList();
-  //     doneTasks = value.where((task) => task['isDone'] == 1).length;
-  //     print("Loaded tasks: $highpriority");
-  //   }
-  //   setState(() {
-  //     isLoading = false;
-  //   }); // <- trigger rebuild
-  // }
-
-  // void deleteTask(int? id) async {
-  //   List<TaskModel> tasks = [];
-  //   // print('hereeeeeeeeeeeee');
-  //   // print('id $id');
-  //   if (id == null) return;
-  //   final prefTasks = await PreferencesManager().getString(StorageKey.tasks);
-  //   // print("pref $prefTasks");
-
-  //   if (prefTasks != null) {
-  //     final List<dynamic> decoded = jsonDecode(prefTasks);
-
-  //     tasks = decoded.map((task) => TaskModel.fromMap(task)).toList();
-  //     tasks.removeWhere((test) => test.id == id);
-
-  //     setState(() {
-  //       list.removeWhere((test) => test.id == id);
-  //       highpriority.removeWhere((test) => test['id'] == id);
-  //     });
-  //     final updatedTask = tasks.map((toElement) => toElement.toMap()).toList();
-  //     PreferencesManager().setString(StorageKey.tasks, jsonEncode(updatedTask));
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     print("All tasks: $value");
+    // final profilecontroller = context.read<ProfileController>()..init();
 
     return Scaffold(
       floatingActionButton: Builder(
@@ -112,6 +57,7 @@ class TasksScreen extends StatelessWidget {
                   'Add New Task',
                   style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     fontWeight: FontWeight.w500,
+                    color: Color(0xFFFFFFFF),
                   ),
                 ),
               ),
@@ -129,8 +75,8 @@ class TasksScreen extends StatelessWidget {
               SizedBox(height: 52),
               Row(
                 children: [
-                  Selector<TaskController, String?>(
-                    selector: (context, TaskController controller) =>
+                  Selector<ProfileController, String?>(
+                    selector: (context, ProfileController controller) =>
                         controller.userImagePath,
                     builder:
                         (
@@ -152,8 +98,8 @@ class TasksScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Selector<TaskController, String?>(
-                          selector: (context, TaskController controller) =>
+                        Selector<ProfileController, String?>(
+                          selector: (context, ProfileController controller) =>
                               controller.username,
                           builder:
                               (
@@ -168,8 +114,10 @@ class TasksScreen extends StatelessWidget {
                                       .displaySmall
                                       ?.copyWith(
                                         fontSize: 17,
-                                        fontWeight: FontWeight.w200,
                                         letterSpacing: 2,
+                                        color: ThemeController.isDark()
+                                            ? Colors.white
+                                            : Color(0xFF161F1B),
                                       ),
                                 );
                               },
@@ -189,12 +137,21 @@ class TasksScreen extends StatelessWidget {
                   ),
                   CircleAvatar(
                     radius: 23,
-                    backgroundColor: Color(0xFF282828),
-                    child: SvgPicture.asset(
-                      'assets/images/sun.svg',
-                      width: 23,
-                      height: 23,
-                    ),
+                    backgroundColor: ThemeController.isDark()
+                        ? Color(0xFF282828)
+                        : Color(0xFFFFFFFF),
+                    child: ThemeController.isDark()
+                        ? SvgPicture.asset(
+                            'assets/images/sun.svg',
+                            width: 23,
+                            height: 23,
+                          )
+                        : SvgPicture.asset(
+                            'assets/images/moon-01.svg',
+                            width: 23,
+                            height: 23,
+                            color: Colors.black,
+                          ),
                   ),
                 ],
               ),
@@ -229,7 +186,9 @@ class TasksScreen extends StatelessWidget {
                       : Container(
                           height: 90,
                           decoration: BoxDecoration(
-                            color: Color(0xFF282828),
+                            color: ThemeController.isDark()
+                                ? Color(0xFF282828)
+                                : Color(0xFFFFFFFF),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Padding(
@@ -254,7 +213,9 @@ class TasksScreen extends StatelessWidget {
                                           .textTheme
                                           .displaySmall
                                           ?.copyWith(
-                                            color: Color(0xFFC6C6C6),
+                                            color: ThemeController.isDark()
+                                                ? Color(0xFFC6C6C6)
+                                                : Color(0xFF3A4640),
                                             fontSize: 17,
                                           ),
                                     ),
@@ -321,7 +282,9 @@ class TasksScreen extends StatelessWidget {
                     height: 230,
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                      color: Color(0xFF282828),
+                      color: ThemeController.isDark()
+                          ? Color(0xFF282828)
+                          : Color(0xFFFFFFFF),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Padding(
@@ -363,7 +326,7 @@ class TasksScreen extends StatelessWidget {
                                       return Row(
                                         children: [
                                           Checkbox(
-                                            value: task['isDone'] == 1
+                                            value: task.isDone == 1
                                                 ? true
                                                 : false,
                                             onChanged: (value1) async {
@@ -371,40 +334,30 @@ class TasksScreen extends StatelessWidget {
                                                   .indexOf(
                                                     controller.tasks.firstWhere(
                                                       (test) =>
-                                                          test.id == task['id'],
+                                                          test.id == task.id,
                                                     ),
                                                   );
                                               controller.doneTask(
                                                 value1,
                                                 index,
                                               );
-                                              // setState(() {
-                                              //   print(value1);
-                                              //   task['isDone'] = value1!
-                                              //       ? 1
-                                              //       : 0;
-                                              // });
-                                              // SharedPreferences prefs =
-                                              //     await SharedPreferences.getInstance();
-                                              // await prefs.setString(
-                                              //   'tasks',
-                                              //   jsonEncode(value),
-                                              // ); // save whole task list
-                                              // getData(); // reload and rebuild
                                             }, // Optional: handle check action
                                             activeColor: Color(0xFF15B86C),
                                           ),
                                           Text(
-                                            task['title'],
+                                            task.title,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .displaySmall
                                                 ?.copyWith(
-                                                  color: task['isDone'] == 1
-                                                      ? Color(0xFFA0A0A0)
-                                                      : Colors.white,
-                                                  decoration:
-                                                      task['isDone'] == 1
+                                                  color: task.isDone == 1
+                                                      ? ThemeController.isDark()
+                                                            ? Color(0xFFA0A0A0)
+                                                            : Color(0xFF6A6A6A)
+                                                      : ThemeController.isDark()
+                                                      ? Color(0xFFFFFCFC)
+                                                      : Color(0xFF161F1B),
+                                                  decoration: task.isDone == 1
                                                       ? TextDecoration
                                                             .lineThrough
                                                       : TextDecoration.none,
@@ -428,8 +381,8 @@ class TasksScreen extends StatelessWidget {
                     bottom: 20,
                     right: 25,
                     child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        final bool? result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (BuildContext context) {
@@ -437,6 +390,9 @@ class TasksScreen extends StatelessWidget {
                             },
                           ),
                         );
+                        if (result != null && result) {
+                          context.read<TaskController>().getData();
+                        }
                       },
                       child: Container(
                         padding: EdgeInsets.all(
@@ -452,11 +408,16 @@ class TasksScreen extends StatelessWidget {
                         child: CircleAvatar(
                           radius: 25,
 
-                          backgroundColor: Color(0xFF282828),
+                          backgroundColor: ThemeController.isDark()
+                              ? Color(0xFF282828)
+                              : Color(0xFFFFFFFF),
                           child: SvgPicture.asset(
                             'assets/images/arrow-1.svg',
                             width: 18,
                             height: 18,
+                            color: ThemeController.isDark()
+                                ? Colors.white
+                                : Color(0xFF161F1B),
                           ),
                         ),
                       ),
@@ -492,7 +453,6 @@ class TasksScreen extends StatelessWidget {
                               showDesc: true,
                               onDelete: (_) async {
                                 controller.deleteTask(task.id);
-                                // deleteTask(task.id);
                               },
                               onChanged: (value, id) async {
                                 print("id is ${controller.tasks[index].id}");
@@ -503,54 +463,6 @@ class TasksScreen extends StatelessWidget {
                                   ),
                                 );
                                 controller.doneTask(value, index1);
-
-                                // int? index1;
-                                // if (list
-                                //     .firstWhere((test) => test.id == id)
-                                //     .isHighPriority) {
-                                //   index1 = highpriority.indexOf(
-                                //     highpriority.firstWhere(
-                                //       (test) => test['id'] == id,
-                                //     ),
-                                //   );
-                                // }
-                                // print('before change ${list[index!].isDone}');
-                                // setState(() {
-                                //   list[index!].isDone = value! ? 1 : 0;
-                                //   if (index1 != null &&
-                                //       index1 < highpriority.length) {
-                                //     highpriority[index1!]['isDone'] = value!
-                                //         ? 1
-                                //         : 0;
-                                //   }
-                                // });
-                                // final allData = PreferencesManager()
-                                //     .getString(StorageKey.tasks);
-                                // print('after change ${list[index].isDone}');
-                                // print('all Data $allData');
-                                // if (allData != null) {
-                                //   List<TaskModel> allDataList =
-                                //       (jsonDecode(allData) as List)
-                                //           .map(
-                                //             (element) =>
-                                //                 TaskModel.fromMap(element),
-                                //           )
-                                //           .toList();
-                                //   final int newIndex = allDataList.indexWhere(
-                                //     (e) => e.id == list[index!].id,
-                                //   );
-                                //   allDataList[newIndex] = list[index];
-
-                                //   await PreferencesManager().setString(
-                                //     StorageKey.tasks,
-                                //     jsonEncode(
-                                //       allDataList
-                                //           .map((e) => e.toMap())
-                                //           .toList(),
-                                //     ),
-                                //   );
-                                //   getData();
-                                // }
                               },
                               onEdit: () {
                                 controller.getData();

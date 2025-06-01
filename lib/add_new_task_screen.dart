@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -98,8 +99,10 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                     ElevatedButton.icon(
                       onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
+                          final random = Random();
+
                           TaskModel task = TaskModel(
-                            id: controller.tasks.length + 1,
+                            id: random.nextInt(100000),
                             isDone: 0,
                             title: taskNameController.text,
                             desc: taskDescController.text,
@@ -145,7 +148,10 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                         child: Text(
                           'Add Task',
                           style: Theme.of(context).textTheme.displaySmall
-                              ?.copyWith(fontWeight: FontWeight.w500),
+                              ?.copyWith(
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFFFFFFFF),
+                              ),
                         ),
                       ),
                     ),

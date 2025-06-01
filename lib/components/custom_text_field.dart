@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tasky/theme/theme_controller.dart';
 
 class CustomTextField extends StatelessWidget {
   CustomTextField({
@@ -29,7 +30,9 @@ class CustomTextField extends StatelessWidget {
         TextFormField(
           controller: controller,
           maxLines: maxLines,
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: ThemeController.isDark() ? Colors.white : Colors.black,
+          ),
           cursorColor: Colors.white,
           decoration: InputDecoration(hintText: hintText),
           validator: validator != null

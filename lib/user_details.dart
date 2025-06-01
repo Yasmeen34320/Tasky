@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tasky/components/custom_text_field.dart';
 import 'package:tasky/constants/storage_key.dart';
+import 'package:tasky/controllers/profile_controller.dart';
 import 'package:tasky/controllers/task_controller.dart';
 import 'package:tasky/services/preferences_manager.dart';
 
@@ -39,8 +40,15 @@ class _UserDetailsState extends State<UserDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<TaskController>(
-      create: (context) => TaskController()..init(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<TaskController>(
+          create: (context) => TaskController()..init(),
+        ),
+        ChangeNotifierProvider<ProfileController>(
+          create: (context) => ProfileController()..init(),
+        ),
+      ],
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -95,7 +103,7 @@ class _UserDetailsState extends State<UserDetails> {
                             ), // width:200, height:50
                           ),
                           onPressed: () async {
-                            controller.changeDetails(
+                            context.read<ProfileController>().changeDetails(
                               userNameController.text,
                               motivationQuoteController.text,
                             );
@@ -109,7 +117,7 @@ class _UserDetailsState extends State<UserDetails> {
                             // );
                             motivationQuoteController.clear();
                             userNameController.clear();
-                            Navigator.pop(context);
+                            Navigator.pop(context, true);
                           },
                           child: Text(
                             'Save Changes',

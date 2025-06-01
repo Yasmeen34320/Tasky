@@ -59,12 +59,12 @@ ThemeData lightTheme = ThemeData(
   ),
   textTheme: TextTheme(
     displaySmall: TextStyle(
-      fontSize: 24,
+      fontSize: 16,
       color: Color(0xFF161F1B),
       fontWeight: FontWeight.w400,
     ),
     displayMedium: TextStyle(
-      fontSize: 28,
+      fontSize: 24,
       color: Color(0xFF161F1B),
       fontWeight: FontWeight.w400,
     ),
