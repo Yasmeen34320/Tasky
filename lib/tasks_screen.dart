@@ -124,13 +124,27 @@ class TasksScreen extends StatelessWidget {
                         ),
 
                         SizedBox(height: 8),
-                        Text(
-                          'One task at a time.One step \ncloser.',
-                          style: Theme.of(context).textTheme.displaySmall
-                              ?.copyWith(
-                                fontWeight: FontWeight.normal,
-                                letterSpacing: 1,
-                              ),
+                        Selector<ProfileController, String?>(
+                          selector: (context, ProfileController controller) =>
+                              controller.motivationQuote,
+                          builder:
+                              (
+                                BuildContext context,
+                                String? motivationQuote,
+                                Widget? child,
+                              ) {
+                                return Text(
+                                  motivationQuote ??
+                                      'One task at a time.One step closer.',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .displaySmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.normal,
+                                        letterSpacing: 1,
+                                      ),
+                                );
+                              },
                         ),
                       ],
                     ),

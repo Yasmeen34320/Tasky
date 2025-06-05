@@ -180,9 +180,10 @@ class ProfileScreen extends StatelessWidget {
                           final bool? result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (BuildContext context) {
-                                return UserDetails();
-                              },
+                              builder: (_) => ChangeNotifierProvider(
+                                create: (_) => ProfileController()..init(),
+                                child: UserDetails(),
+                              ),
                             ),
                           );
                           if (result != null && result) {

@@ -29,8 +29,12 @@ flutter:
 
 flutter_native_splash:
   color: "#181818" # background color
-  image: assets/images/logo.png # your splash image
+  image: assets/images/vector1.png # your splash image
+  android_gravity: center       # options: center, top, bottom, etc.
+  ios_content_mode: center      # options: scaleToFill, scaleAspectFit, scaleAspectFill, center
+
+  fullscreen: true
   android_12:
     color: "#181818"
-    image: assets/images/vector.png
+    image: assets/images/vector1.png
 

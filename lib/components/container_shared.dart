@@ -218,6 +218,7 @@ Future<bool?> _showButtonSheet(BuildContext context, TaskModel task) {
                               ),
                             );
                             task.isHighPriority = value;
+                            isHighPriority = value;
                             controller.toggleHighPriority(value, index);
                             // setState(() {
                             //   isHighPriority = value;

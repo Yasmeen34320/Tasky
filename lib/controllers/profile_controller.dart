@@ -20,6 +20,7 @@ class ProfileController with ChangeNotifier {
     motivationQuote = PreferencesManager().getString(
       StorageKey.motivationQuote,
     );
+    print('from load  $username   $motivationQuote');
     notifyListeners();
   }
 
@@ -30,10 +31,15 @@ class ProfileController with ChangeNotifier {
   }
 
   changeDetails(String user, String motivation) async {
-    await PreferencesManager().setString(StorageKey.username, user);
+    username = user;
+    motivationQuote = motivation;
+    print('username $username , motivation $motivation');
     await PreferencesManager().setString(
       StorageKey.motivationQuote,
       motivation,
     );
+    await PreferencesManager().setString(StorageKey.username, user);
+
+    notifyListeners();
   }
 }
